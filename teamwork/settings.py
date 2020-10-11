@@ -23,9 +23,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'yhn9)5ws#!_vg1c)g4^tu#77ik-#b6s5&-mh$a(s8(+b%j$d#%'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['teamworkad.pythonanywhere.com']
 
 
 # Application definition
@@ -77,22 +77,22 @@ WSGI_APPLICATION = 'teamwork.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-# DATABASES = {
-#       'default': {
-#           'ENGINE': 'django.db.backends.mysql',
-#           'NAME':  'teamwork$default',
-#           'USER': 'teamwork',
-#           'PASSWORD': 'zjss123456',
-#           'HOST': 'teamwork.mysql.pythonanywhere-services.com',
-#       }
-#   }
-
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
+      'default': {
+          'ENGINE': 'django.db.backends.mysql',
+          'NAME':  'teamwork$default',
+          'USER': 'teamwork',
+          'PASSWORD': 'zjss123456',
+          'HOST': 'teamwork.mysql.pythonanywhere-services.com',
+      }
+  }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators

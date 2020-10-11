@@ -80,10 +80,10 @@ WSGI_APPLICATION = 'teamwork.wsgi.application'
 DATABASES = {
       'default': {
           'ENGINE': 'django.db.backends.mysql',
-          'NAME':  'teamwork$default',
-          'USER': 'teamwork',
+          'NAME':  'teamworkad$default',
+          'USER': 'teamworkad',
           'PASSWORD': 'zjss123456',
-          'HOST': 'teamwork.mysql.pythonanywhere-services.com',
+          'HOST': 'teamworkad.mysql.pythonanywhere-services.com',
       }
   }
 

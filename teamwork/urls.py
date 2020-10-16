@@ -31,7 +31,7 @@ urlpatterns = [
     path('check_lastname_validate/', announcement_view.check_lastname_validate, name='check_lastname_validate'),
     path('check_firstname_validate/', announcement_view.check_firstname_validate, name='check_firstname_validate'),
     path('check_teamname_validate/', announcement_view.check_teamname_validate, name='check_teamname_validate'),
-    re_path('^announcement/(\d+)$', announcement_view.make_announcement),
+    re_path('^announcement/(.{32})/(\d+)$', announcement_view.make_announcement),
     re_path('^readconfirm/(\d+)/(.*)$', announcement_view.read_confirm, name='read_confirm'),
     re_path('^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
     re_path('^showupload/(\d+)/(.*)$', announcement_view.show_upload, name='show_upload'),

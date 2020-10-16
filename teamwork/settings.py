@@ -25,8 +25,8 @@ SECRET_KEY = 'yhn9)5ws#!_vg1c)g4^tu#77ik-#b6s5&-mh$a(s8(+b%j$d#%'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
+# ALLOWED_HOSTS = []
 ALLOWED_HOSTS = ['teamworkad.pythonanywhere.com']
-
 
 # Application definition
 

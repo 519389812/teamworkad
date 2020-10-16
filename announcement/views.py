@@ -85,7 +85,9 @@ def login(request):
 
 
 @check_authority
-def make_announcement(request, id):
+def make_announcement(request, team_id, id):
+    if request.user.team_id != team_id:
+        return HttpResponse("无权限查看!")
     try:
         current_username = request.user.full_name
     except:
@@ -136,8 +138,8 @@ def read_confirm(request, id, require_upload):
     # 对应action中 <form action = "{% url 'confirm' id %}" method = "post"> 的 {% url 'confirm' id %} 方法，
     # confirm指向urls.py中name=confirm的url
     user = request.session.get("login_user", "")
-    user = User.objects.get(username=user).full_name
-    if len(AnnouncementRecord.objects.filter(aid=id, reader=user)) > 0:
+    user = User.objects.get(username=user)
+    if len(AnnouncementRecord.objects.filter(aid=id, reader=user.full_name)) > 0:
         return HttpResponse("您已经提交确认，请勿重复提交！")
     else:
         if require_upload == "True":
@@ -155,18 +157,18 @@ def read_confirm(request, id, require_upload):
                         if x > y:
                             img = img.rotate(90, expand=True)
                         img = img.resize((392, 700))
-                        img.save(os.path.join(settings.MEDIA_ROOT, image_path, (id + '_' + user + '.' + img_type)))
+                        img.save(os.path.join(settings.MEDIA_ROOT, image_path, (id + '_' + user.full_name + '.' + img_type)))
                     except:
                         return HttpResponse("图片格式错误，请尝试重新上传或更换图片！")
-                    AnnouncementRecord.objects.create(aid=id, reader=user, image=os.path.join(image_path, (
-                                id + '_' + user + '.' + img_type)))
+                    AnnouncementRecord.objects.create(aid=id, reader=user.full_name, image=os.path.join(image_path, (
+                                id + '_' + user.full_name + '.' + img_type)), team_id=user.team_id)
                     return redirect(request.META['HTTP_REFERER'])
                 else:
                     return HttpResponse("图片格式错误，，请尝试重新上传或更换图片！")
             else:
                 return HttpResponse("图片未上传！")
         else:
-            AnnouncementRecord.objects.create(aid=id, reader=user)
+            AnnouncementRecord.objects.create(aid=id, reader=user.full_name, team_id=user.team_id)
             return redirect(request.META['HTTP_REFERER'])
 
 
@@ -175,12 +177,12 @@ def feedback_confirm(request, id):
     # 对应action中 <form action = "{% url 'feedback_confirm' id %}" method = "post"> 的 {% url 'feedback_confirm' id %} 方法，
     # confirm指向urls.py中name=confirm的url
     user = request.session.get("login_user", "")
-    user = User.objects.get(username=user).full_name
+    user = User.objects.get(username=user)
     comment = request.POST.get("feedback")
-    if len(Feedback.objects.filter(aid=id, sender=user)) > 3:
+    if len(Feedback.objects.filter(aid=id, sender=user.full_name)) > 3:
         return HttpResponse("您的评论次数过多，已经限制评论，请勿刷屏！")
     else:
-        Feedback.objects.create(aid=id, sender=user, comment=comment)
+        Feedback.objects.create(aid=id, sender=user.full_name, comment=comment, team_id=user.team_id)
         return redirect(request.META['HTTP_REFERER'])
 
 

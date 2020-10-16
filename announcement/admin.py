@@ -5,6 +5,8 @@ from io import BytesIO
 import pandas as pd
 from django.http import HttpResponse
 import numpy as np
+from user.models import User
+from team.models import Team
 
 
 class AnnouncementAdmin(admin.ModelAdmin):
@@ -21,6 +23,35 @@ class AnnouncementAdmin(admin.ModelAdmin):
     date_hierarchy = 'issue_datetime'  # 详细时间分层筛选
     list_filter = ('require_upload', 'active',)
     filter_horizontal = ('to_group', 'to_people')  # 设置多对多字段的筛选器
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.filter(team_id=request.user.team_id)
+
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        """
+        Get a form Field for a ManyToManyField.
+        """
+        # db_field.name 本模型下的字段名称
+        if db_field.name == "to_group":
+            # 过滤
+            kwargs["queryset"] = Team.objects.filter(team_id=request.user.team_id)
+            # filter_horizontal 保持横向展示
+            from django.contrib.admin import widgets
+            kwargs['widget'] = widgets.FilteredSelectMultiple(
+                db_field.verbose_name,
+                db_field.name in self.filter_vertical
+            )
+        if db_field.name == "to_people":
+            # 过滤
+            kwargs["queryset"] = User.objects.filter(team_id=request.user.team_id)
+            # filter_horizontal 保持横向展示
+            from django.contrib.admin import widgets
+            kwargs['widget'] = widgets.FilteredSelectMultiple(
+                db_field.verbose_name,
+                db_field.name in self.filter_vertical
+            )
+        return super(AnnouncementAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
     def get_to_group(self, obj):
         return ' '.join([i.name for i in obj.to_group.all()])
@@ -99,7 +130,9 @@ class AnnouncementAdmin(admin.ModelAdmin):
         user = request.user.full_name
         obj.author = user
         # request.META储存客户端header信息，是个字典
-        obj.url_address = '标题:' + obj.title + '\n截止时间:' + datetime.datetime.strftime(obj.deadline, "%Y-%m-%d %H:%M:%S") + '\nhttp://' + request.META['HTTP_HOST'] + "/announcement/" + str(obj.id)
+        obj.url_address = '标题:' + obj.title + '\n截止时间:' + datetime.datetime.strftime(obj.deadline, "%Y-%m-%d %H:%M:%S") + '\nhttp://' + request.META['HTTP_HOST'] + "/announcement/" + request.user.team_id + "/" + str(obj.id)
+        if obj.team_id is None:
+            obj.team_id = request.user.team_id
         obj.save()
 
 
@@ -111,6 +144,10 @@ class AnnouncementRecordAdmin(admin.ModelAdmin):
     search_fields = ("aid", "reader",)
     date_hierarchy = 'read_datetime'  # 详细时间分层筛选
     list_filter = ('read_status',)
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.filter(team_id=request.user.team_id)
 
     def export_directly(self, request, queryset):
         outfile = BytesIO()
@@ -155,6 +192,10 @@ class FeedbackAdmin(admin.ModelAdmin):
     search_fields = ("aid", "sender", "comment")
     date_hierarchy = 'sent_datetime'  # 详细时间分层筛选
     actions = ["export_directly"]
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.filter(team_id=request.user.team_id)
 
     def export_directly(self, request, queryset):
         outfile = BytesIO()

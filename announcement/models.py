@@ -19,6 +19,7 @@ class Announcement(models.Model):
     deadline = models.DateTimeField(blank=True, verbose_name="截止时间")
     url_address = models.TextField(max_length=200, blank=True, verbose_name="转发路径")
     active = models.BooleanField(default=True, verbose_name="启用")
+    team_id = models.CharField(max_length=32, null=True, verbose_name="团队id")
 
     class Meta:
         verbose_name = "公告"
@@ -35,6 +36,7 @@ class AnnouncementRecord(models.Model):
     image = models.ImageField(upload_to=image_path, blank=True, verbose_name="图片")
     read_datetime = models.DateTimeField(auto_now=True, verbose_name="确认时间")
     read_status = models.CharField(max_length=10, verbose_name="阅读状态")
+    team_id = models.CharField(max_length=32, null=True, verbose_name="团队id")
 
     class Meta:
         verbose_name = "公告确认明细"
@@ -51,6 +53,7 @@ class Feedback(models.Model):
     sent_datetime = models.DateTimeField(auto_now=True, verbose_name="发送时间")
     comment = models.TextField(max_length=100, verbose_name="内容")
     reply_to = models.IntegerField(null=True, verbose_name="回复id")
+    team_id = models.CharField(max_length=32, null=True, verbose_name="团队id")
 
     class Meta:
         verbose_name = "留言"
